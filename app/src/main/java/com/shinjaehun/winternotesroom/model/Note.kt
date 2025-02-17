@@ -1,7 +1,7 @@
 package com.shinjaehun.winternotesroom.model
 
-data class NoteEntity(
-    val noteId: String?,
+data class Note(
+    val noteId: String,
     val title: String,
     val contents: String?,
     val dateTime: String,

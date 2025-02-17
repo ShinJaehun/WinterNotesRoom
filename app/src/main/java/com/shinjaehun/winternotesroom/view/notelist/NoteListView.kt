@@ -1,10 +1,12 @@
 package com.shinjaehun.winternotesroom.view.notelist
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +23,7 @@ class NoteListView: Fragment() {
     private lateinit var binding: FragmentNoteListBinding
     private lateinit var viewModel: NoteListViewModel
     private lateinit var adapter: NoteListAdapter
+    private lateinit var callback: OnBackPressedCallback
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,12 +31,23 @@ class NoteListView: Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-//        requireActivity().onBackPressedDispatcher.addCallback(this) {
-//            activity?.finish()
-//        }
-
         binding = FragmentNoteListBinding.inflate(inflater)
         return binding.root
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                activity?.finish()
+            }
+        }
+        requireActivity().onBackPressedDispatcher.addCallback(this, callback)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        callback.remove()
     }
 
     override fun onDestroyView() {
@@ -57,6 +71,10 @@ class NoteListView: Fragment() {
         viewModel.handleEvent(
             NoteListEvent.OnStart
         )
+
+        binding.fabAddNote.setOnClickListener {
+            startNoteDetailWithArgs("0")
+        }
     }
 
     private fun setupAdapter() {
@@ -82,7 +100,7 @@ class NoteListView: Fragment() {
             }
         )
 
-        viewModel.noteEntityList.observe(
+        viewModel.noteList.observe(
             viewLifecycleOwner,
             Observer { noteList ->
                 adapter.submitList(noteList)
@@ -104,7 +122,7 @@ class NoteListView: Fragment() {
 //        )
     }
 
-    private fun startNoteDetailWithArgs(noteId: String?) {
+    private fun startNoteDetailWithArgs(noteId: String) {
         val bundle = Bundle()
         bundle.putString("noteId", noteId)
         findNavController().navigate(R.id.noteDetailView, bundle)

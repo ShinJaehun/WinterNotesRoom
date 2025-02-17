@@ -12,11 +12,11 @@ import coil3.load
 import com.shinjaehun.winternotesroom.common.ColorBLACK
 import com.shinjaehun.winternotesroom.common.simpleDate
 import com.shinjaehun.winternotesroom.databinding.ItemContainerNoteBinding
-import com.shinjaehun.winternotesroom.model.NoteEntity
+import com.shinjaehun.winternotesroom.model.Note
 
 class NoteListAdapter(
     val event: MutableLiveData<NoteListEvent> = MutableLiveData()
-): ListAdapter<NoteEntity, NoteListAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
+): ListAdapter<Note, NoteListAdapter.NoteViewHolder>(NoteDiffUtilCallback()) {
 
     inner class NoteViewHolder(val binding: ItemContainerNoteBinding): RecyclerView.ViewHolder(binding.root)
 

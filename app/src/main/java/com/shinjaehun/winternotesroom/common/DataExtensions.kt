@@ -1,11 +1,11 @@
 package com.shinjaehun.winternotesroom.common
 
 import android.text.Editable
-import com.shinjaehun.winternotesroom.model.NoteEntity
+import com.shinjaehun.winternotesroom.model.Note
 import com.shinjaehun.winternotesroom.model.RoomNote
 
-internal val RoomNote.toNoteEntity: NoteEntity
-    get() = NoteEntity(
+internal val RoomNote.toNote: Note
+    get() = Note(
         this.noteId.toString(),
         this.title,
         this.contents,
@@ -15,9 +15,9 @@ internal val RoomNote.toNoteEntity: NoteEntity
         this.webLink,
     )
 
-internal val NoteEntity.toRoomNote: RoomNote
+internal val Note.toRoomNote: RoomNote
     get() = RoomNote(
-        this.noteId!!.toInt(),
+        this.noteId.toInt(),
         this.title,
         this.contents,
         this.dateTime,
@@ -26,8 +26,8 @@ internal val NoteEntity.toRoomNote: RoomNote
         this.webLink,
     )
 
-internal fun List<RoomNote>.toNoteListFromRoomNoteList(): List<NoteEntity> = this.flatMap {
-    listOf(it.toNoteEntity)
+internal fun List<RoomNote>.toNoteListFromRoomNoteList(): List<Note> = this.flatMap {
+    listOf(it.toNote)
 }
 
 internal fun String.toEditable(): Editable = Editable.Factory.getInstance().newEditable(this)

@@ -17,7 +17,7 @@ internal fun currentTime() = SimpleDateFormat(
 
 internal fun simpleDate(dateString: String): String {
     val toDate = SimpleDateFormat("yyyy MMMM dd, EEEE, HH:mm a").parse(dateString)
-    return SimpleDateFormat("yyyy MMMM dd", Locale.getDefault()).format(toDate)
+    return SimpleDateFormat("yyyy MMMM dd", Locale.getDefault()).format(toDate!!)
 }
 
 internal fun currentTimeInfo() = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(
