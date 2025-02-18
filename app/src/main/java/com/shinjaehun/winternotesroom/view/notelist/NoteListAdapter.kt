@@ -33,12 +33,12 @@ class NoteListAdapter(
                 binding.tvTitle.text = note.title
                 binding.tvDateTime.text = simpleDate(note.dateTime)
 
-                if (note.imagePath.isNullOrEmpty()) {
-                    binding.rivImagePreview.visibility = View.GONE
-                } else {
-                    binding.rivImagePreview.load(note.imagePath)
-                    binding.rivImagePreview.visibility = View.VISIBLE
-                }
+//                if (note.imagePath.isNullOrEmpty()) {
+//                    binding.rivImagePreview.visibility = View.GONE
+//                } else {
+//                    binding.rivImagePreview.load(note.imagePath)
+//                    binding.rivImagePreview.visibility = View.VISIBLE
+//                }
 
                 val gradientDrawable = binding.layoutNote.background as GradientDrawable
                 if (note.color.isNullOrEmpty()) {

@@ -49,17 +49,19 @@ class NoteDetailViewModel(
         when(event){
             is NoteDetailEvent.OnStart -> getNote(event.noteId)
             is NoteDetailEvent.OnDoneClick -> updateNote(event.note)
-//            is NoteDetailEvent.OnNoteImageChange -> TODO()
-//            is NoteDetailEvent.OnNoteImageDeleteClick -> TODO()
+
             is NoteDetailEvent.OnNoteColorChange -> changeNoteColor(event.color)
             is NoteDetailEvent.OnWebLinkChange -> changeWebLink(event.webLink)
             NoteDetailEvent.OnWebLinkDeleteClick -> deleteWebLink()
             NoteDetailEvent.OnDeleteClick -> deleteNote()
+
+//            NoteDetailEvent.OnAddNoteImageClick -> TODO()
+//            is NoteDetailEvent.OnNoteImagePick -> TODO()
         }
     }
 
     private fun deleteNote() = launch {
-        val deletedResult = noteRepo.deleteNote(note.value!!)
+        val deletedResult = noteRepo.deleteNote(note.value!!.noteId)
         when(deletedResult){
             is Result.Value -> deletedState.value = true
             is Result.Error -> deletedState.value = false

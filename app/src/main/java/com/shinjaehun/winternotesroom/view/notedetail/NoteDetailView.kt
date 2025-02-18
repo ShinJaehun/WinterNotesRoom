@@ -101,7 +101,7 @@ class NoteDetailView: Fragment() {
                         title = title,
                         contents = contents,
                         dateTime = currentTime(),
-                        imagePath = null,
+                        imageBytes = null,
                         color = colorCode,
                         webLink = webUrl
                     )

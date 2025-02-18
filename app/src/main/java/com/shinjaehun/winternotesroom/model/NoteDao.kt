@@ -17,8 +17,8 @@ interface NoteDao {
 //    @Query("SELECT * FROM winter_notes WHERE title LIKE '%' || :keyword || '%' OR contents LIKE '%' || :keyword || '%'")
 //    suspend fun searchNote(keyword: String): List<RoomNote>
 
-    @Delete
-    suspend fun deleteNote(note: RoomNote)
+    @Query("DELETE FROM winter_notes WHERE noteId = :noteId")
+    suspend fun deleteNote(noteId: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateNote(note: RoomNote): Long
