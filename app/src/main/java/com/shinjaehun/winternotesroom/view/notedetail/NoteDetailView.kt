@@ -1,10 +1,12 @@
 package com.shinjaehun.winternotesroom.view.notedetail
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +19,13 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.transition.Visibility
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.shinjaehun.winternotesroom.R
 import com.shinjaehun.winternotesroom.common.ColorBLACK
@@ -29,10 +34,15 @@ import com.shinjaehun.winternotesroom.common.ColorLIGHTBLUE
 import com.shinjaehun.winternotesroom.common.ColorPINK
 import com.shinjaehun.winternotesroom.common.ColorYELLOW
 import com.shinjaehun.winternotesroom.common.currentTime
+import com.shinjaehun.winternotesroom.common.getBitmapFromBytes
+import com.shinjaehun.winternotesroom.common.getByteArrayFromImageView
 import com.shinjaehun.winternotesroom.common.makeToast
 import com.shinjaehun.winternotesroom.common.toEditable
 import com.shinjaehun.winternotesroom.databinding.FragmentNoteDetailBinding
 import com.shinjaehun.winternotesroom.model.Note
+import java.io.ByteArrayOutputStream
+
+private const val TAG = "NoteDetailView"
 
 class NoteDetailView: Fragment() {
 
@@ -94,6 +104,16 @@ class NoteDetailView: Fragment() {
             val colorCode = String.format("#%06X", (0xFFFFFF and gradientDrawable.color!!.defaultColor))
             val webUrl = binding.tvWebUrl.text.toString()
 
+
+            val byteArray = if (binding.ivNote.visibility == View.VISIBLE) {
+                getByteArrayFromImageView(binding.ivNote)
+            } else {
+                null
+            }
+
+            // 여기서 새로 byteArray를 계산하지 말고
+            // viewModel에서 byteArray를 state 형태로 저장
+
             viewModel.handleEvent(
                 NoteDetailEvent.OnDoneClick(
                     Note(
@@ -101,7 +121,7 @@ class NoteDetailView: Fragment() {
                         title = title,
                         contents = contents,
                         dateTime = currentTime(),
-                        imageBytes = null,
+                        imageBytes = byteArray,
                         color = colorCode,
                         webLink = webUrl
                     )
@@ -123,6 +143,8 @@ class NoteDetailView: Fragment() {
         viewModel.note.observe(
             viewLifecycleOwner,
             Observer { note ->
+
+                Log.i(TAG, "note: $note")
                 binding.etNoteTitle.text = note.title.toEditable()
                 binding.tvDateTime.text = note.dateTime
                 if (!note.contents.isNullOrEmpty()) {
@@ -146,6 +168,17 @@ class NoteDetailView: Fragment() {
                     showWebLink(note.webLink)
                 }
                 binding.misc.layoutDeleteNote.visibility = View.VISIBLE
+
+                if (note.imageBytes != null && note.imageBytes.isNotEmpty()) {
+                    binding.ivNote.visibility = View.VISIBLE
+                    binding.ivNote.setImageBitmap(getBitmapFromBytes(note.imageBytes))
+
+                    binding.ivDeleteImage.visibility = View.VISIBLE
+                    binding.ivDeleteImage.setOnClickListener {
+                        binding.ivNote.visibility = View.GONE
+                        binding.ivDeleteImage.visibility = View.GONE
+                    }
+                }
             }
         )
 
@@ -192,6 +225,20 @@ class NoteDetailView: Fragment() {
                     makeToast("노트 삭제 성공")
                 }
                 findNavController().navigate(R.id.noteListView)
+            }
+        )
+
+        viewModel.noteImage.observe(
+            viewLifecycleOwner,
+            Observer {
+                binding.ivNote.visibility = View.VISIBLE
+                binding.ivNote.setImageBitmap(getBitmapFromBytes(it))
+
+                binding.ivDeleteImage.visibility = View.VISIBLE
+                binding.ivDeleteImage.setOnClickListener {
+                    binding.ivNote.visibility = View.GONE
+                    binding.ivDeleteImage.visibility = View.GONE
+                }
             }
         )
     }
@@ -286,11 +333,11 @@ class NoteDetailView: Fragment() {
             )
         }
 
-//        binding.misc.layoutAddImage.setOnClickListener {
-//            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-//
-//            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-//        }
+        binding.misc.layoutAddImage.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+            pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
 
         binding.misc.layoutAddUrl.setOnClickListener {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -359,6 +406,16 @@ class NoteDetailView: Fragment() {
         }
 
         dialogDeleteNote.show()
+    }
+
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        uri?.let {
+            activity?.contentResolver?.openInputStream(uri)?.use {
+                viewModel.handleEvent(
+                    NoteDetailEvent.OnNoteImagePick(it.readBytes())
+                )
+            }
+        }
     }
 
     private fun showErrorState(errorMessage: String) = makeToast(errorMessage)

@@ -55,9 +55,13 @@ class NoteDetailViewModel(
             NoteDetailEvent.OnWebLinkDeleteClick -> deleteWebLink()
             NoteDetailEvent.OnDeleteClick -> deleteNote()
 
-//            NoteDetailEvent.OnAddNoteImageClick -> TODO()
-//            is NoteDetailEvent.OnNoteImagePick -> TODO()
+            NoteDetailEvent.OnAddNoteImageClick -> TODO()
+            is NoteDetailEvent.OnNoteImagePick -> noteImagePick(event.bytes)
         }
+    }
+
+    private fun noteImagePick(bytes: ByteArray) {
+        noteImageState.value = bytes
     }
 
     private fun deleteNote() = launch {
@@ -89,7 +93,7 @@ class NoteDetailViewModel(
     }
 
     private fun getNote(noteId: String) = launch {
-        if (noteId == "0") {
+        if (noteId == "0" || noteId.isEmpty()) {
             newNote()
         } else {
             val noteResult = noteRepo.getNoteById(noteId)
@@ -104,5 +108,4 @@ class NoteDetailViewModel(
         noteState.value =
             Note("0", "", "", currentTime(), null, null, null)
     }
-
 }

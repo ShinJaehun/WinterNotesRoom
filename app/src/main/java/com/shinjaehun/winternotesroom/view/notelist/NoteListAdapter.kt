@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
 import com.shinjaehun.winternotesroom.common.ColorBLACK
+import com.shinjaehun.winternotesroom.common.getBitmapFromBytes
 import com.shinjaehun.winternotesroom.common.simpleDate
 import com.shinjaehun.winternotesroom.databinding.ItemContainerNoteBinding
 import com.shinjaehun.winternotesroom.model.Note
@@ -39,6 +40,10 @@ class NoteListAdapter(
 //                    binding.rivImagePreview.load(note.imagePath)
 //                    binding.rivImagePreview.visibility = View.VISIBLE
 //                }
+                if (note.imageBytes != null) {
+                    binding.rivImagePreview.visibility = View.VISIBLE
+                    binding.rivImagePreview.setImageBitmap(getBitmapFromBytes(note.imageBytes))
+                }
 
                 val gradientDrawable = binding.layoutNote.background as GradientDrawable
                 if (note.color.isNullOrEmpty()) {
@@ -53,5 +58,4 @@ class NoteListAdapter(
             }
         }
     }
-
 }

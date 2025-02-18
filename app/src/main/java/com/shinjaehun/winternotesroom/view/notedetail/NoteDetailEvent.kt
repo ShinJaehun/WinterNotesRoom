@@ -13,6 +13,6 @@ sealed class NoteDetailEvent {
     data object OnWebLinkDeleteClick: NoteDetailEvent()
     data object OnDeleteClick: NoteDetailEvent()
 
-//    data class OnNoteImagePick(val bytes: ByteArray): NoteDetailEvent()
-//    object OnAddNoteImageClick: NoteDetailEvent()
+    data class OnNoteImagePick(val bytes: ByteArray): NoteDetailEvent()
+    object OnAddNoteImageClick: NoteDetailEvent()
 }

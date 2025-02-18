@@ -3,8 +3,15 @@ package com.shinjaehun.winternotesroom.common
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.text.Editable
+import android.util.Log
+import android.widget.ImageView
+import androidx.core.graphics.drawable.toBitmap
 import com.shinjaehun.winternotesroom.model.Note
 import com.shinjaehun.winternotesroom.model.RoomNote
+import java.io.ByteArrayOutputStream
+
+
+private const val TAG = "DataExtensions"
 
 suspend fun RoomNote.toNote(imageStorage: ImageStorage): Note {
     return Note(
@@ -19,6 +26,8 @@ suspend fun RoomNote.toNote(imageStorage: ImageStorage): Note {
 }
 
 fun Note.toRoomNote(imagePath: String?): RoomNote {
+    Log.i(TAG, "note: $this")
+    Log.i(TAG, "imagePath: $imagePath")
     return RoomNote(
         this.noteId.toInt(),
         this.title,
@@ -37,5 +46,19 @@ fun getBitmapFromBytes(bytes: ByteArray?): Bitmap? {
         BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
     } else {
         null
+    }
+}
+
+fun getByteArrayFromImageView(imageView: ImageView): ByteArray? {
+    try {
+        val bm = imageView.drawable.toBitmap()
+        val stream = ByteArrayOutputStream()
+        bm.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+        val bytesData = stream.toByteArray()
+        stream.close()
+        return bytesData
+    } catch(e: Exception) {
+        e.printStackTrace()
+        return null
     }
 }
