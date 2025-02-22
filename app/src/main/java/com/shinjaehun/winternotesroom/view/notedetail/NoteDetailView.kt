@@ -25,6 +25,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.transition.Visibility
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.shinjaehun.winternotesroom.R
@@ -50,7 +51,9 @@ class NoteDetailView: Fragment() {
     private lateinit var viewModel: NoteDetailViewModel
     private lateinit var callback: OnBackPressedCallback
 
-    private lateinit var noteId: String
+    private var noteId: Long = 0
+
+    private val args by navArgs<NoteDetailViewArgs>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,7 +83,8 @@ class NoteDetailView: Fragment() {
     override fun onStart() {
         super.onStart()
 
-        noteId = arguments?.getString("noteId")!!
+        Log.i(TAG, "noteId: ${args.noteId}")
+        noteId = args.noteId
 
         viewModel = ViewModelProvider(
             this,

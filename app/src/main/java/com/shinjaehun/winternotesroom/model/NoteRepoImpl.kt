@@ -16,11 +16,11 @@ class NoteRepoImpl(
         return getLocalNotes()
     }
 
-    override suspend fun getNoteById(noteId: String): Result<Exception, Note> {
+    override suspend fun getNoteById(noteId: Long): Result<Exception, Note> {
         return getLocalNote(noteId)
     }
 
-    override suspend fun deleteNote(noteId: String): Result<Exception, Unit> {
+    override suspend fun deleteNote(noteId: Long): Result<Exception, Unit> {
         return deleteLocalNote(noteId)
     }
 
@@ -35,11 +35,11 @@ class NoteRepoImpl(
             }
     }
 
-    private suspend fun getLocalNote(noteId: String): Result<Exception, Note> = Result.build {
+    private suspend fun getLocalNote(noteId: Long): Result<Exception, Note> = Result.build {
         dao.getNoteById(noteId).toNote(imageStorage)
     }
 
-    private suspend fun deleteLocalNote(noteId: String): Result<Exception, Unit> = Result.build {
+    private suspend fun deleteLocalNote(noteId: Long): Result<Exception, Unit> = Result.build {
         val roomNote = dao.getNoteById(noteId)
         roomNote.imagePath?.let {
             imageStorage.deleteImage(it)
@@ -80,7 +80,7 @@ class NoteRepoImpl(
         // 그러니까 이전 값과 비교할 필요가 없음...ㅡㅡ;;
 
         val imagePath: String?
-        if (note.noteId == "0") {
+        if (note.noteId == 0.toLong()) {
             imagePath = note.imageBytes?.let {
                 imageStorage.saveImage(it)
             }

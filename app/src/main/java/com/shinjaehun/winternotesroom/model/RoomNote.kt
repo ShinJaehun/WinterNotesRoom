@@ -11,7 +11,8 @@ import androidx.room.PrimaryKey
 )
 data class RoomNote(
     @PrimaryKey(autoGenerate = true)
-    val noteId: Int = 0,
+    val noteId: Long = 0,
+//    val noteId: Long = 0,
 
     @ColumnInfo(name = "title")
     val title: String,

@@ -21,8 +21,8 @@ class NoteListViewModel(
     private val noteListState = MutableLiveData<List<Note>>()
     val noteList: LiveData<List<Note>> get() = noteListState
 
-    private val editNoteState = MutableLiveData<String>()
-    val editNote: LiveData<String> get() = editNoteState
+    private val editNoteState = MutableLiveData<Long>()
+    val editNote: LiveData<Long> get() = editNoteState
 
 //    private val searchNoteListState = MutableLiveData<List<Note>>()
 //    val searchNoteList: LiveData<List<Note>> get() = searchNoteListState
@@ -39,7 +39,6 @@ class NoteListViewModel(
         val notesResult = noteRepo.getNotes()
         when (notesResult) {
             is Result.Value -> noteListState.value = notesResult.value
-//            is Result.Value -> noteListState.value = notes
             is Result.Error -> errorState.value = GET_NOTES_ERROR
         }
     }

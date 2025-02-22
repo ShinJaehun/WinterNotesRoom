@@ -73,7 +73,7 @@ class NoteListView: Fragment() {
         )
 
         binding.fabAddNote.setOnClickListener {
-            startNoteDetailWithArgs("0")
+            startNoteDetailWithArgs(0)
         }
     }
 
@@ -122,10 +122,9 @@ class NoteListView: Fragment() {
 //        )
     }
 
-    private fun startNoteDetailWithArgs(noteId: String) {
-        val bundle = Bundle()
-        bundle.putString("noteId", noteId)
-        findNavController().navigate(R.id.noteDetailView, bundle)
+    private fun startNoteDetailWithArgs(noteId: Long) {
+        findNavController().navigate(NoteListViewDirections.actionNoteListViewToNoteDetailView(noteId!!))
+
     }
 
     private fun showErrorState(errorMessage: String?) = makeToast(errorMessage!!)

@@ -11,7 +11,7 @@
         tools:layout="@layout/fragment_note_detail"
         >
         <action android:id="@+id/action_noteDetailView_to_noteListView" app:destination="@id/noteListView"/>
-        <argument android:name="noteId" app:argType="string" android:defaultValue='""'/>
+        <argument android:name="noteId" app:argType="long" />
     </fragment>
     <fragment android:id="@+id/noteListView"
         android:name="com.shinjaehun.winternotesroom.view.notelist.NoteListView"

@@ -12,13 +12,13 @@ interface NoteDao {
     suspend fun getNotes(): List<RoomNote>
 
     @Query("SELECT * FROM winter_notes WHERE noteId = :noteId")
-    suspend fun getNoteById(noteId: String): RoomNote
+    suspend fun getNoteById(noteId: Long): RoomNote
 
 //    @Query("SELECT * FROM winter_notes WHERE title LIKE '%' || :keyword || '%' OR contents LIKE '%' || :keyword || '%'")
 //    suspend fun searchNote(keyword: String): List<RoomNote>
 
     @Query("DELETE FROM winter_notes WHERE noteId = :noteId")
-    suspend fun deleteNote(noteId: String)
+    suspend fun deleteNote(noteId: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateNote(note: RoomNote): Long

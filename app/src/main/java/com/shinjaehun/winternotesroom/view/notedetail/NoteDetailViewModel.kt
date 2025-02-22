@@ -1,6 +1,5 @@
 package com.shinjaehun.winternotesroom.view.notedetail
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.shinjaehun.winternotesroom.common.BaseViewModel
@@ -43,8 +42,6 @@ class NoteDetailViewModel(
     private val updatedState = MutableLiveData<Boolean>()
     val updated: LiveData<Boolean> get() = updatedState
 
-    var newNote: Note? = null
-
     override fun handleEvent(event: NoteDetailEvent) {
         when(event){
             is NoteDetailEvent.OnStart -> getNote(event.noteId)
@@ -55,8 +52,8 @@ class NoteDetailViewModel(
             NoteDetailEvent.OnWebLinkDeleteClick -> deleteWebLink()
             NoteDetailEvent.OnDeleteClick -> deleteNote()
 
-            NoteDetailEvent.OnAddNoteImageClick -> TODO()
             is NoteDetailEvent.OnNoteImagePick -> noteImagePick(event.bytes)
+//            NoteDetailEvent.OnAddNoteImageClick -> TODO()
         }
     }
 
@@ -92,8 +89,9 @@ class NoteDetailViewModel(
         }
     }
 
-    private fun getNote(noteId: String) = launch {
-        if (noteId == "0" || noteId.isEmpty()) {
+    private fun getNote(noteId: Long) = launch {
+//        if (noteId == "0" || noteId.isNullOrEmpty()) {
+        if (noteId == 0.toLong()) {
             newNote()
         } else {
             val noteResult = noteRepo.getNoteById(noteId)
@@ -106,6 +104,7 @@ class NoteDetailViewModel(
 
     private fun newNote() {
         noteState.value =
-            Note("0", "", "", currentTime(), null, null, null)
+//            Note("0", "", "", currentTime(), null, null, null)
+            Note(0, "", "", currentTime(), null, null, null)
     }
 }

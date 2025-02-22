@@ -15,7 +15,8 @@ private const val TAG = "DataExtensions"
 
 suspend fun RoomNote.toNote(imageStorage: ImageStorage): Note {
     return Note(
-        this.noteId.toString(),
+//        this.noteId.toString(),
+        this.noteId,
         this.title,
         this.contents,
         this.dateTime,
@@ -26,10 +27,11 @@ suspend fun RoomNote.toNote(imageStorage: ImageStorage): Note {
 }
 
 fun Note.toRoomNote(imagePath: String?): RoomNote {
-    Log.i(TAG, "note: $this")
-    Log.i(TAG, "imagePath: $imagePath")
+//    Log.i(TAG, "note: $this")
+//    Log.i(TAG, "imagePath: $imagePath")
     return RoomNote(
-        this.noteId.toInt(),
+//        this.noteId.toLong(),
+        this.noteId,
         this.title,
         this.contents,
         this.dateTime,

@@ -3,7 +3,7 @@ package com.shinjaehun.winternotesroom.view.notedetail
 import com.shinjaehun.winternotesroom.model.Note
 
 sealed class NoteDetailEvent {
-    data class OnStart(val noteId: String): NoteDetailEvent()
+    data class OnStart(val noteId: Long): NoteDetailEvent()
     data class OnDoneClick(val note: Note): NoteDetailEvent()
 
 //    data class OnNoteImageDeleteClick(val imagePath: String?): NoteDetailEvent()
@@ -14,5 +14,5 @@ sealed class NoteDetailEvent {
     data object OnDeleteClick: NoteDetailEvent()
 
     data class OnNoteImagePick(val bytes: ByteArray): NoteDetailEvent()
-    object OnAddNoteImageClick: NoteDetailEvent()
+//    object OnAddNoteImageClick: NoteDetailEvent()
 }
