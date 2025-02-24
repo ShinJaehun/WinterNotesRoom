@@ -9,6 +9,8 @@ import androidx.core.graphics.drawable.toBitmap
 import com.shinjaehun.winternotesroom.model.Note
 import com.shinjaehun.winternotesroom.model.RoomNote
 import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
+import kotlin.math.ln
 
 
 private const val TAG = "DataExtensions"
@@ -51,16 +53,17 @@ fun getBitmapFromBytes(bytes: ByteArray?): Bitmap? {
     }
 }
 
-fun getByteArrayFromImageView(imageView: ImageView): ByteArray? {
-    try {
-        val bm = imageView.drawable.toBitmap()
-        val stream = ByteArrayOutputStream()
-        bm.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-        val bytesData = stream.toByteArray()
-        stream.close()
-        return bytesData
-    } catch(e: Exception) {
-        e.printStackTrace()
-        return null
-    }
-}
+//fun getByteArrayFromImageView(imageView: ImageView): ByteArray? {
+//    try {
+//        val bm = imageView.drawable.toBitmap()
+//        val stream = ByteArrayOutputStream()
+//        bm.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+//        이것 때문에 이미지를 저장할 때마다 달라지는 것 같다.
+//        val bytesData = stream.toByteArray()
+//        stream.close()
+//        return bytesData
+//    } catch(e: Exception) {
+//        e.printStackTrace()
+//        return null
+//    }
+//}

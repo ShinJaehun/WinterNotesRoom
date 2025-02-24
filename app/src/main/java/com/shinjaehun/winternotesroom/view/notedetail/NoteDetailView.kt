@@ -1,7 +1,6 @@
 package com.shinjaehun.winternotesroom.view.notedetail
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -19,14 +18,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.core.graphics.drawable.toBitmap
-import androidx.core.graphics.drawable.toBitmapOrNull
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.transition.Visibility
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.shinjaehun.winternotesroom.R
 import com.shinjaehun.winternotesroom.common.ColorBLACK
@@ -36,12 +32,10 @@ import com.shinjaehun.winternotesroom.common.ColorPINK
 import com.shinjaehun.winternotesroom.common.ColorYELLOW
 import com.shinjaehun.winternotesroom.common.currentTime
 import com.shinjaehun.winternotesroom.common.getBitmapFromBytes
-import com.shinjaehun.winternotesroom.common.getByteArrayFromImageView
 import com.shinjaehun.winternotesroom.common.makeToast
 import com.shinjaehun.winternotesroom.common.toEditable
 import com.shinjaehun.winternotesroom.databinding.FragmentNoteDetailBinding
 import com.shinjaehun.winternotesroom.model.Note
-import java.io.ByteArrayOutputStream
 
 private const val TAG = "NoteDetailView"
 
@@ -52,6 +46,8 @@ class NoteDetailView: Fragment() {
     private lateinit var callback: OnBackPressedCallback
 
     private var noteId: Long = 0
+    private var noteImageByteArray: ByteArray? = null
+    // byteArray 통째로 말고 파일 경로만 처리할 수 없을까?
 
     private val args by navArgs<NoteDetailViewArgs>()
 
@@ -108,13 +104,9 @@ class NoteDetailView: Fragment() {
             val colorCode = String.format("#%06X", (0xFFFFFF and gradientDrawable.color!!.defaultColor))
             val webUrl = binding.tvWebUrl.text.toString()
 
-
-            val byteArray = if (binding.ivNote.visibility == View.VISIBLE) {
-                getByteArrayFromImageView(binding.ivNote)
-            } else {
-                null
+            if (binding.ivNote.visibility != View.VISIBLE) {
+                noteImageByteArray = null
             }
-
             // 여기서 새로 byteArray를 계산하지 말고
             // viewModel에서 byteArray를 state 형태로 저장
 
@@ -125,7 +117,7 @@ class NoteDetailView: Fragment() {
                         title = title,
                         contents = contents,
                         dateTime = currentTime(),
-                        imageBytes = byteArray,
+                        imageBytes = noteImageByteArray,
                         color = colorCode,
                         webLink = webUrl
                     )
@@ -174,8 +166,11 @@ class NoteDetailView: Fragment() {
                 binding.misc.layoutDeleteNote.visibility = View.VISIBLE
 
                 if (note.imageBytes != null && note.imageBytes.isNotEmpty()) {
+
+                    noteImageByteArray = note.imageBytes
+
                     binding.ivNote.visibility = View.VISIBLE
-                    binding.ivNote.setImageBitmap(getBitmapFromBytes(note.imageBytes))
+                    binding.ivNote.setImageBitmap(getBitmapFromBytes(noteImageByteArray))
 
                     binding.ivDeleteImage.visibility = View.VISIBLE
                     binding.ivDeleteImage.setOnClickListener {
@@ -235,6 +230,8 @@ class NoteDetailView: Fragment() {
         viewModel.noteImage.observe(
             viewLifecycleOwner,
             Observer {
+                noteImageByteArray = it
+
                 binding.ivNote.visibility = View.VISIBLE
                 binding.ivNote.setImageBitmap(getBitmapFromBytes(it))
 

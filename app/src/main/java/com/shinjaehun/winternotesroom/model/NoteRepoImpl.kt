@@ -48,55 +48,53 @@ class NoteRepoImpl(
     }
 
     private suspend fun insertOrUpdateLocalNote(note: Note): Result<Exception, Unit> = Result.build {
-//        // ImageStorage에서 null 처리를 하는게 맞지 않을까?
-//        Log.i(TAG, "insertOrUpdateLocalNote note: $note")
-//
-//        val beforeUpdateRoomNote = note.noteId.let { dao.getNoteById(it) }
-//        Log.i(TAG, "beforeUpdateNote: $beforeUpdateRoomNote")
-//
-//        val beforeUpdateRoomNoteBytes = beforeUpdateRoomNote.imagePath?.let {
-//            imageStorage.getImage(it)
-//        }
-//        Log.i(TAG, "beforeUpdateNoteBytes: ${beforeUpdateRoomNoteBytes.toString()}")
-//
-//        val updateNoteBytes = note.imageBytes
-//        Log.i(TAG, "updateNoteBytes: ${updateNoteBytes.toString()}")
-//
-//        val isSameImage = beforeUpdateRoomNoteBytes != null && updateNoteBytes != null &&
-//                beforeUpdateRoomNoteBytes.contentEquals(updateNoteBytes)
-//        Log.i(TAG, "isSameImage: $isSameImage")
-//
-//        val imagePath: String? = if (isSameImage) {
-//            beforeUpdateRoomNote.imagePath
-//        } else if (beforeUpdateRoomNoteBytes == null && updateNoteBytes == null) {
-//            null // 일단 임시로...
-//        } else {
-//            beforeUpdateRoomNote.imagePath?.let { imageStorage.deleteImage(it) }
-//            imageStorage.saveImage(updateNoteBytes!!)
-//        }
-
-        // 이렇게 하면 안 될거 같은데
-        // 어쨌든 imageView에서 byetArray를 받아오다보니 값이 계속해서 갱신됨...
-        // 그러니까 이전 값과 비교할 필요가 없음...ㅡㅡ;;
-
         val imagePath: String?
         if (note.noteId == 0.toLong()) {
-            imagePath = note.imageBytes?.let {
-                imageStorage.saveImage(it)
+            if (note.imageBytes != null) {
+                Log.i(TAG, "new image!")
+                imagePath = note.imageBytes.let {
+                    imageStorage.saveImage(it)
+                }
+            } else {
+                Log.i(TAG, "no image!")
+                imagePath = null
             }
         } else {
+            // 이미지를 비교하지 않고 매번 갱신하는 방법이 나을 수 있음...
+//            val beforeUpdateRoomNote = note.noteId.let { dao.getNoteById(it) }
+//            Log.i(TAG, "different image!")
+//            beforeUpdateRoomNote.imagePath?.let {
+//                imageStorage.deleteImage(it)
+//            }
+//            imagePath = note.imageBytes?.let {
+//                imageStorage.saveImage(it)
+//            }
+
             val beforeUpdateRoomNote = note.noteId.let { dao.getNoteById(it) }
-            // 이유는 모르겠는데 new note가 아닌 경우 아예 더이상 처리를 안하고 종료해버리는 듯...
-            // getNoteById() 실패후 다른 내용 처리하지 않는 거 같음...
-            // Log 보여주지도 못하고 dao.insertOrUpdateNote()까지 도달하지 못함
-            beforeUpdateRoomNote.imagePath?.let {
-                imageStorage.deleteImage(it)
+            val beforeUpdateRoomNoteImageBytes = beforeUpdateRoomNote.imagePath?.let {
+                imageStorage.getImage(it)
             }
-            imagePath = note.imageBytes?.let {
-                imageStorage.saveImage(it)
+            val updateNoteImageBytes = note.imageBytes
+            val isSameImage =
+                beforeUpdateRoomNoteImageBytes != null &&
+                        updateNoteImageBytes != null &&
+                        beforeUpdateRoomNoteImageBytes.contentEquals(updateNoteImageBytes)
+            // view에서 bitmap 이미지를 받아오는데
+            // 압축 과정이 있기 때문에 항상 이미지가 달라지는 것 같다.
+            if (isSameImage) {
+                Log.i(TAG, "same image!")
+                imagePath = beforeUpdateRoomNote.imagePath
+            } else {
+                Log.i(TAG, "different image!")
+                beforeUpdateRoomNote.imagePath?.let {
+                    imageStorage.deleteImage(it)
+                }
+                imagePath = note.imageBytes?.let {
+                    imageStorage.saveImage(it)
+                }
             }
         }
-        Log.i(TAG, "imagePath: $imagePath")
+        Log.i(TAG, "new imagePath: $imagePath")
 
         dao.insertOrUpdateNote(note.toRoomNote(imagePath))
     }
